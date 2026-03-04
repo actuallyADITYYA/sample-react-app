@@ -5,3 +5,10 @@ interface WeatherData {
   wind: number;
   rain: number;
 }
+
+interface SeismicData {
+  id: string;
+  magnitute: number;
+  latitude: string;
+  longitude: string;
+}

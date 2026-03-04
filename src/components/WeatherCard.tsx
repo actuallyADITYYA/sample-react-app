@@ -4,72 +4,24 @@ import {
   CardBody,
   CardFooter,
   Divider,
-  Input,
-  Button,
 } from "@nextui-org/react";
-import { useState } from "react";
 import { TiWeatherDownpour, TiWeatherSunny } from "react-icons/ti";
-import { getWeatherData } from "../api/actions";
 
-const WeatherCard: React.FC = () => {
-  const [data, setData] = useState<WeatherData>();
-  const [loadingState, setLoadingState] = useState(false);
-  const [city, setCity] = useState("");
-  const [error, setError] = useState("");
+interface WeatherCardProps {
+  city: string;
+  data?: WeatherData;
+  loading: boolean;
+  error: string;
+}
 
-  const handleSearch = () => {
-    console.log("Fetching Weather Data...");
-    console.log(city);
-    setLoadingState(true);
-    getWeatherData(city)
-      .then((res) => {
-        setError("");
-        if (res) {
-          console.log(res);
-          setData(res);
-          setLoadingState(false);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoadingState(false);
-        setData(undefined);
-        setError(error);
-      });
-  };
-
+const WeatherCard: React.FC<WeatherCardProps> = ({ city, data, loading, error }) => {
   return (
     <Card className="max-w-[400px]">
-      <CardHeader className="flex gap-3">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearch();
-          }}
-        >
-          <div className="flex flex-col w-full p-2 space-y-4">
-            <Input
-              id="cityname"
-              type="text"
-              label="City"
-              value={city}
-              onChange={(e) => {
-                setCity(e.target.value);
-              }}
-            />
-            <Button
-              className=""
-              color="primary"
-              isLoading={loadingState}
-              type="submit"
-            >
-              Search
-            </Button>
-          </div>
-        </form>
+      <CardHeader className="flex gap-3 flex-col">
+        <h2 className="text-2xl font-bold">Weather</h2>
       </CardHeader>
       <Divider />
-      {data ? (
+      {data && !error ? (
         <CardBody>
           <div className="flex flex-col items-center">
             <h1 className="text-3xl font-bold">{data.city}</h1>
@@ -91,19 +43,17 @@ const WeatherCard: React.FC = () => {
       ) : (
         <CardBody>
           <div className="flex flex-col items-center">
-            <p className="text-xl font-bold">Please enter a city</p>
+            <p className="text-xl font-bold">
+              {loading ? "Loading..." : "Enter a city to see weather data"}
+            </p>
           </div>
         </CardBody>
       )}
       <Divider />
       <CardFooter>
         <div className="flex flex-col items-left">
-          {error && <p className="text-xs text-red-600 ">{error}</p>}
-          {data && (
-            <p className="text-xs  text-gray-600 ">Last update successful.</p>
-          )}
-          {!data && (
-            <p className="text-xs  text-gray-600 ">Waiting for input...</p>
+          {data && !loading && !error && (
+            <p className="text-xs text-gray-600">Last update successful.</p>
           )}
         </div>
       </CardFooter>
